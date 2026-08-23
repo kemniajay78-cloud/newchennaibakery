@@ -267,7 +267,7 @@ Every product carries a little piece of their journey. Every order is prepared w
 		];
 		let cart = []; let activeCategory = 'All'; let pendingOrder = null;
 		const money = value => '₹' + value.toLocaleString('en-IN');
-		const API_BASE_URL = window.BAKERY_API_URL || '';
+		const API_BASE_URL = window.BAKERY_API_URL = "https://your-backend-url.com";
 		const apiUrl = path => `${API_BASE_URL}${path}`;
 		async function readApiResponse(response){ const text=await response.text(); let data; try { data=JSON.parse(text); } catch(error) { throw new Error('Bakery server is not connected. Run the Node.js server or configure BAKERY_API_URL for GitHub Pages.'); } if(!response.ok) throw new Error(data.error||'Request failed'); return data; }
 		async function loadCatalog(){ try { const response=await fetch(apiUrl('/api/products')); const databaseProducts=await readApiResponse(response); const mapped=databaseProducts.map(p=>({...p,id:`db-${p.id}`,price:Number(p.price),status:Number(p.stock)>0?'available':'unavailable',tags:[Number(p.stock)>0?'Available':'Sold out',...(p.eggless?['Eggless']:[])],image:p.image||'',desc:p.description||'',ingredients:p.ingredients||'',allergens:p.allergens||''})); products=products.concat(mapped); renderProducts(); } catch(error) { renderProducts(); } }
@@ -306,7 +306,7 @@ Every product carries a little piece of their journey. Every order is prepared w
 		document.getElementById('aiInput').addEventListener('keydown',event=>{ if(event.key==='Enter'&&!event.shiftKey){ event.preventDefault(); sendAssistantMessage(); } });
 		const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition; if(SpeechRecognition){ const recognition=new SpeechRecognition(); recognition.lang='en-IN'; recognition.onresult=event=>{ document.getElementById('aiInput').value=event.results[0][0].transcript; sendAssistantMessage(); }; document.getElementById('aiVoice').onclick=()=>recognition.start(); } else document.getElementById('aiVoice').disabled=true;
 		document.getElementById('categories').addEventListener('click',e=>{ const btn=e.target.closest('[data-category]'); if(!btn)return; activeCategory=btn.dataset.category; document.querySelectorAll('.category').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderProducts(); }); document.getElementById('searchInput').addEventListener('input',renderProducts); document.getElementById('sortSelect').addEventListener('change',renderProducts); document.getElementById('cakeSize').addEventListener('change',e=>document.getElementById('customPrice').textContent=money(799+Number(e.target.value))); document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();}); renderProducts(); loadCatalog(); loadStory();
-window.BAKERY_API_URL = "https://your-backend-url.com";
+
 	</script>
 </body>
 </html>
